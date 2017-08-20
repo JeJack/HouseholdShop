@@ -1,0 +1,10 @@
+# .gitignore
+
+#any hidden files and directories
+.*
+
+#include .gitignore
+!.gitignore
+
+#target directory (while we're using Maven)
+target/
