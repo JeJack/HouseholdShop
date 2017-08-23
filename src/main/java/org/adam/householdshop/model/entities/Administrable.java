@@ -4,8 +4,8 @@ import org.adam.householdshop.model.enums.Month;
 
 public interface Administrable {
 
-	public void removeUser(RandomUser user);
-	public void editUser(RandomUser user);
+	public void removeUser(OrfinaryUser user);
+	public void editUser(OrfinaryUser user);
 	public String generaterRaport(Month month);
 		
 }

@@ -1,17 +1,21 @@
 package org.adam.householdshop.model.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="offer")
 public class Offer {
 	
 	@Id
@@ -22,22 +26,27 @@ public class Offer {
 	@NotNull
 	private Address address;
 	
+	@Min(0)
+	@Max(100)
 	@NotNull
 	private short floor;
 	
+	@DecimalMin("10,00")
+	@Digits(integer=3, fraction=2)
 	@NotNull
 	private double area;
 	
-	@NotNull
-	private List<String> photoURls;
+	@ElementCollection
+	private List<String> photoURls = new ArrayList();
 	
 	@NotNull
+	@Min(1)
+	@Max(10)
 	private short numberOfRooms;
 	
 	@NotNull
 	private boolean balcony;
 	
-	@NotNull
 	private String description;
 	
 	public Address getAddress() {
@@ -81,5 +90,11 @@ public class Offer {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
 	}
 }
