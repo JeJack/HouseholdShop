@@ -28,4 +28,11 @@ public class OfferController {
 				.entity(offerFinder.findOne(new OfferId(id), projection))
 				.build();
 	}
+	
+	@GET
+	public Response findAll(@HeaderParam("content") String projection) {
+		return Response.status(200)
+				.entity(offerFinder.findAll(projection))
+				.build();
+	}
 }

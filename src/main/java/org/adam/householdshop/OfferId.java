@@ -13,4 +13,8 @@ public class OfferId {
 		this.uuid = UUID.fromString(id);
 	}
 
+	public UUID toUUID() {
+		return uuid;
+	}
+
 }
