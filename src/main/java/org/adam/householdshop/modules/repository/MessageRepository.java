@@ -12,35 +12,39 @@ import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
-import org.adam.householdshop.Projection;
-import org.adam.householdshop.modules.finder.OfferRepository;
+import org.adam.householdshop.enums.MessageProjection;
+import org.adam.householdshop.enums.Projection;
+import org.adam.householdshop.modules.finder.Repository;
 
 @Stateless
-public class CustomerOfferRepository implements OfferRepository {
+public class MessageRepository implements Repository {
 
-	/** Wstrzyknięcie zależności z JNDI" */
 	@Resource(mappedName = "householdshop")
 	private DataSource datasource;
-
+	
 	@Override
 	public Map<String, Map<String, Object>> findAll(Projection projection) {
-		String query = "select " + projection.toString() + " from offer_finder join adress";
-
+		String query = "select " + projection.toString() + " from ((message_finder m join user_finder u on m.from = u.id) join offer_finder o on m.offer_id = o.id)";
+		
+		if (projection.equals(MessageProjection.CUSTOMER)) {
+			query = "select " + projection.toString() + " from ((message_finder m join user_finder u on m.to = u.id) join offer_finder o on m.offer_id = o.id)";
+		}
+		
 		/** try-with-resource Java 7 */
 		try (Connection con = datasource.getConnection(); PreparedStatement ps = con.prepareStatement(query);) {
 
 			try (ResultSet rs = ps.executeQuery();) {
 				Map<String, Map<String, Object>> resultMap = new HashMap<String, Map<String, Object>>();
-				String offerId = "";
+				String messageId = "";
 				while (rs.next()) {
 					Map<String, Object> tmpMap = new HashMap<String, Object>();
 					for (String field : projection.getFields()) {
-						if (field.equals("offer_id"))
-							offerId = rs.getString(field);
+						if (field.equals("m.id"))
+							messageId = rs.getString(field);
 						else
 							tmpMap.put(field, rs.getObject(field));
 					}
-					resultMap.put(offerId, tmpMap);
+					resultMap.put(messageId, tmpMap);
 				}
 				return resultMap;
 			}
@@ -50,28 +54,9 @@ public class CustomerOfferRepository implements OfferRepository {
 		return null;
 	}
 
+	@Override
 	public Map<String, Object> findOne(UUID id, Projection projection) {
-		String query = "select " + projection.toString() + " from offer_finder join adress where offer_id = " + id;
-
-		/** try-with-resource Java 7 */
-		try (Connection con = datasource.getConnection(); PreparedStatement ps = con.prepareStatement(query);) {
-
-			try (ResultSet rs = ps.executeQuery();) {
-				Map<String, Object> resultMap = new HashMap<String, Object>();
-				String offerId = "";
-				while (rs.next()) {
-					for (String field : projection.getFields()) {
-						if (field.equals("offer_id"))
-							offerId = rs.getString(field);
-						else
-							resultMap.put(field, rs.getObject(field));
-					}
-					return resultMap;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		// TODO Auto-generated method stub
 		return null;
 	}
 

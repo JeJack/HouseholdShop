@@ -7,8 +7,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import org.adam.householdshop.OfferId;
-import org.adam.householdshop.modules.finder.OfferFinderService;
+import org.adam.householdshop.common.OfferId;
+import org.adam.householdshop.modules.finder.services.OfferFinderService;
 
 @Path("offer")
 @RequestScoped
@@ -22,7 +22,7 @@ public class OfferController {
 
 	@GET
 	@Path("/{id}")
-	public Response findOne(@PathParam("id") String id, @HeaderParam("content") String projection) {
+	public Response findOne(@PathParam("id") String id, @HeaderParam("content-type") String projection) {
 		
 		return Response.status(200)
 				.entity(offerFinder.findOne(new OfferId(id), projection))
