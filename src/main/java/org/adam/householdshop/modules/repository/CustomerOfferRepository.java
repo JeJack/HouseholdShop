@@ -23,34 +23,56 @@ public class CustomerOfferRepository implements OfferRepository {
 	private DataSource datasource;
 
 	@Override
-	public Map<String, Object> findOne(UUID id, Projection projection) {
-		String query = "select " + Projection.get(projection) + " from offer_finder where id = " + id;
-		return execute(query);
-	}
+	public Map<String, Map<String, Object>> findAll(Projection projection) {
+		String query = "select " + projection.toString() + " from offer_finder join adress";
 
-	private Map<String, Object> execute(String query) {
 		/** try-with-resource Java 7 */
-		
 		try (Connection con = datasource.getConnection(); PreparedStatement ps = con.prepareStatement(query);) {
 
 			try (ResultSet rs = ps.executeQuery();) {
 				Map<String, Map<String, Object>> resultMap = new HashMap<String, Map<String, Object>>();
-				while( rs.next()) {
-				    Map<String, Object> tmpMap = new HashMap<String, Object>();
-				    tmpMap.put( "floor", rs.get( "floor" );
-				    tmpMap.put( "number_of_rooms", rs.get( "number_of_rooms" );
-				    tmpMap.put( "balcony", rs.get( "balcony" );
-				    tmpMap.put( "area", rs.get( "area" );
-				    tmpMap.put( "city", rs.get( "city" );
-				    tmpMap.put( "street", rs.get( "street" );
-				    tmpMap.put( "postal_code", rs.get( "postal_code" );
-				    tmpMap.put( "house_number", rs.get( "house_numbery" );
-				    resultMap.put( rs.getString( "id" ), tmpMap );
+				String offerId = "";
+				while (rs.next()) {
+					Map<String, Object> tmpMap = new HashMap<String, Object>();
+					for (String field : projection.getFields()) {
+						if (field.equals("offer_id"))
+							offerId = rs.getString(field);
+						else
+							tmpMap.put(field, rs.getObject(field));
+					}
+					resultMap.put(offerId, tmpMap);
+				}
+				return resultMap;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public Map<String, Object> findOne(UUID id, Projection projection) {
+		String query = "select " + projection.toString() + " from offer_finder join adress where offer_id = " + id;
+
+		/** try-with-resource Java 7 */
+		try (Connection con = datasource.getConnection(); PreparedStatement ps = con.prepareStatement(query);) {
+
+			try (ResultSet rs = ps.executeQuery();) {
+				Map<String, Object> resultMap = new HashMap<String, Object>();
+				String offerId = "";
+				while (rs.next()) {
+					for (String field : projection.getFields()) {
+						if (field.equals("offer_id"))
+							offerId = rs.getString(field);
+						else
+							resultMap.put(field, rs.getObject(field));
+					}
+					return resultMap;
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 }

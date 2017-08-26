@@ -17,9 +17,8 @@ public class OfferFinderService {
 		return repository.findOne(offerId.toUUID(), Projection.valueOf(projection));
 	}
 
-	public Object findAll(String projection) {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Map<String, Object>> findAll(String projection) {
+		return repository.findAll(Projection.valueOf(projection));
 	}
 
 

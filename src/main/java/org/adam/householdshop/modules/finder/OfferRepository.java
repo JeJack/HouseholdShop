@@ -9,4 +9,6 @@ public interface OfferRepository {
 
 	Map<String, Object> findOne(UUID uuid, Projection valueOf);
 
+	Map<String, Map<String, Object>> findAll(Projection projection);
+
 }
